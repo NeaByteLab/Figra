@@ -44,8 +44,20 @@ export function findFileStructure(filePath: string): StructureInfo[] {
   while ((match = enumRegex.exec(content)) !== null) {
     addExport(match[1] ?? '', 'enum')
   }
-  const defaultExportRegex: RegExp = /export\s+default\s+(\w+)/g
-  while ((match = defaultExportRegex.exec(content)) !== null) {
+  const defaultFunctionRegex: RegExp = /export\s+default\s+(?:async\s+)?function\s+(\w+)/g
+  while ((match = defaultFunctionRegex.exec(content)) !== null) {
+    addExport(match[1] ?? '', 'default')
+  }
+  const defaultClassRegex: RegExp = /export\s+default\s+class\s+(\w+)/g
+  while ((match = defaultClassRegex.exec(content)) !== null) {
+    addExport(match[1] ?? '', 'default')
+  }
+  const defaultConstRegex: RegExp = /export\s+default\s+(?:const|let|var)\s+(\w+)/g
+  while ((match = defaultConstRegex.exec(content)) !== null) {
+    addExport(match[1] ?? '', 'default')
+  }
+  const defaultArrowRegex: RegExp = /export\s+default\s+(\w+)\s*=/g
+  while ((match = defaultArrowRegex.exec(content)) !== null) {
     addExport(match[1] ?? '', 'default')
   }
   const functionExpressionRegex: RegExp = /export\s+const\s+(\w+)\s*=\s*function/g
@@ -85,26 +97,18 @@ function addExport(name: string, type: string): void {
  * @param content - The file content to analyze for re-exports
  */
 function filterReExports(content: string): void {
-  const reExportLines: string[] = content
-    .split('\n')
-    .filter(
-      (line: string) =>
-        line.includes('export') && line.includes('{') && line.includes('}') && line.includes('from')
-    )
-  for (const line of reExportLines) {
-    const startIndex: number = line.indexOf('{')
-    const endIndex: number = line.lastIndexOf('}')
-    if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
-      const content: string = line.slice(startIndex + 1, endIndex).trim()
-      const names: string[] = content.split(',').map((n: string) => {
-        return n.trim().split(' as ')[0]?.trim() ?? ''
-      })
-      names.forEach((name: string) => {
-        if (name) {
-          addExport(name, 're-export')
-        }
-      })
-    }
+  const reExportRegex: RegExp = /^export\s*\{([^}]+)\}\s*from\s*['"][^'"]+['"]/gm
+  while ((match = reExportRegex.exec(content)) !== null) {
+    const names: string[] =
+      match[1]?.split(',').map((n: string) => {
+        const parts: string[] = n.trim().split(' as ')
+        return parts.length > 1 ? (parts[1]?.trim() ?? '') : (parts[0]?.trim() ?? '')
+      }) ?? []
+    names.forEach((name: string) => {
+      if (name) {
+        addExport(name, 're-export')
+      }
+    })
   }
 }
 
@@ -114,29 +118,18 @@ function filterReExports(content: string): void {
  * @param content - The file content to analyze for named exports
  */
 function filterNamedExports(content: string): void {
-  const namedExportLines: string[] = content
-    .split('\n')
-    .filter(
-      (line: string) =>
-        line.includes('export') &&
-        line.includes('{') &&
-        line.includes('}') &&
-        !line.includes('from')
-    )
-  for (const line of namedExportLines) {
-    const startIndex: number = line.indexOf('{')
-    const endIndex: number = line.lastIndexOf('}')
-    if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
-      const content: string = line.slice(startIndex + 1, endIndex).trim()
-      const names: string[] = content.split(',').map((n: string) => {
-        return n.trim().split(' as ')[0]?.trim() ?? ''
-      })
-      names.forEach((name: string) => {
-        if (name) {
-          addExport(name, 'named')
-        }
-      })
-    }
+  const namedExportRegex: RegExp = /^export\s*\{([^}]+)\}(?!\s*from)/gm
+  while ((match = namedExportRegex.exec(content)) !== null) {
+    const names: string[] =
+      match[1]?.split(',').map((n: string) => {
+        const parts: string[] = n.trim().split(' as ')
+        return parts.length > 1 ? (parts[1]?.trim() ?? '') : (parts[0]?.trim() ?? '')
+      }) ?? []
+    names.forEach((name: string) => {
+      if (name) {
+        addExport(name, 'named')
+      }
+    })
   }
 }
 
