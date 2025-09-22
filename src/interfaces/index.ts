@@ -14,3 +14,14 @@ export interface PlatformResponse {
   /** Binary archive file extension */
   extension: string
 }
+
+/**
+ * Interface for structure information.
+ * @description Information about the structure of a file.
+ */
+export interface StructureInfo {
+  /** The name of the structure */
+  name: string
+  /** The type of the structure */
+  type: string
+}

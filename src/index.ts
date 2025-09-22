@@ -15,10 +15,10 @@ function isRipgrepDownloaded(): boolean {
 /**
  * Main entry point for the application.
  * @description Processes command line arguments, validates the file path, and initiates file analysis or binary download.
- * @returns void
+ * @returns Promise<void>
  * @throws {Error} When file validation fails or required binary is not available
  */
-function main(): void {
+async function main(): Promise<void> {
   const args: string[] = process.argv.slice(2)
   if (args.length === 0) {
     console.error('[?] Usage: figra <file-path> | figra download')
@@ -45,7 +45,7 @@ function main(): void {
     if (!isRipgrepDownloaded()) {
       throw new Error('Ripgrep not downloaded, please run "figra download" first!')
     }
-    analyzeFile(validatedPath)
+    await analyzeFile(validatedPath)
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error(`[✗] Error: ${error.message}`)
@@ -63,5 +63,12 @@ function main(): void {
  */
 if (import.meta.url === `file://${process.argv[1]}`) {
   console.log(asciiArt)
-  main()
+  main().catch((error: unknown) => {
+    if (error instanceof Error) {
+      console.error(`[✗] Error: ${error.message}`)
+    } else {
+      console.error('[✗] Error: An unknown error occurred')
+    }
+    process.exit(1)
+  })
 }
