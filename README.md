@@ -6,17 +6,19 @@
 ![license](https://img.shields.io/npm/l/@neabyte/figra.svg)
 ![status](https://img.shields.io/badge/status-development-orange.svg)
 
-Parses import/export statements, generates dependency trees, and tracks filename references with alias resolution to map file relationships.
+A powerful file analysis tool that parses import/export statements, generates dependency trees, and tracks filename references with alias resolution. Features automatic ripgrep binary download and multi-platform support.
 
 > 🚧 **Note:** This tool is currently in development. Some features may not be fully implemented yet.
 
 ## ✨ Features
 
-- **Import/Export Analysis** - Parses all import/export relationships
+- **Auto Download** - Automatically downloads ripgrep binary for your platform
 - **Dependency Trees** - Generates hierarchical file structures
-- **Filename Tracking** - Finds filename mentions in code
-- **Alias Resolution** - Handles path aliases like `@utils/*`
 - **File Correlation** - Maps relationships between files
+- **Filename Tracking** - Finds filename mentions in code
+- **Import/Export Analysis** - Parses all import/export relationships
+- **Multi-Platform** - Supports Windows, macOS, and Linux
+- **Smart Extraction** - Automatically extracts and sets up ripgrep
 
 ---
 
@@ -29,6 +31,10 @@ npm install -g @neabytelab/figra
 ## 🚀 Usage
 
 ```bash
+# Download and setup ripgrep binary (required first time)
+figra download
+
+# Analyze a file
 figra /path/to/your/file.ts
 ```
 

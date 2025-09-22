@@ -64,5 +64,8 @@
   ],
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@neabyte/console-kit": "^1.2.1"
   }
 }

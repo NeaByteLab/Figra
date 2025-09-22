@@ -8,8 +8,10 @@
     "rootDir": "src",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@types/*": ["src/types/*"],
+      "@constants/*": ["src/constants/*"],
+      "@core/*": ["src/core/*"],
+      "@interfaces/*": ["src/interfaces/*"],
+      "@scripts/*": ["src/scripts/*"],
       "@utils/*": ["src/utils/*"]
     },
     "tsBuildInfoFile": ".tsbuildinfo",
