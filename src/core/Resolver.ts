@@ -28,6 +28,7 @@ export function findPathResolver(
   projectConfig: AliasConfig[],
   filePattern: Array<FinderResult>
 ): Array<FinderResult> {
+  resolvedResults.length = 0
   for (const result of filePattern) {
     const { filename, data }: { filename: string; data: string } = result
     regexES6Import(data, filename, projectRoot, projectConfig)
@@ -184,10 +185,64 @@ function resolveImportPath(
       return result
     }
   }
+  const resAliasNonRelativePath: string | null = aliasNonRelativePath(
+    normImportPath,
+    projectRoot,
+    aliasConfig
+  )
+  if (resAliasNonRelativePath !== null) {
+    return resAliasNonRelativePath
+  }
+  const resAliasRelativePath: string | null = aliasRelativePath(normImportPath, aliasConfig)
+  if (resAliasRelativePath !== null) {
+    return resAliasRelativePath
+  }
+  return null
+}
+
+/**
+ * Resolves non-relative import paths using alias configuration.
+ * @description Handles import paths that don't start with '.' by checking alias mappings and project root resolution.
+ * @param normImportPath - The normalized import path to resolve
+ * @param projectRoot - The root directory of the project
+ * @param aliasConfig - The alias configuration for path mapping
+ * @returns The resolved file path or null if not found
+ */
+function aliasNonRelativePath(
+  normImportPath: string,
+  projectRoot: string,
+  aliasConfig: AliasConfig[]
+): string | null {
   if (!normImportPath.startsWith('.')) {
+    for (const alias of aliasConfig) {
+      const aliasKey: string = normalizePath(alias.key)
+      if (aliasKey.includes('*')) {
+        const aliasPrefix: string = aliasKey.replace('*', '')
+        if (normImportPath.startsWith(aliasPrefix)) {
+          const relativePath: string = normImportPath.replace(aliasPrefix, '')
+          const aliasValue: string = normalizePath(alias.value)
+          const fullPath: string = resolve(aliasValue, relativePath)
+          return findFileWithExtension(fullPath)
+        }
+      } else if (normImportPath === aliasKey) {
+        const aliasValue: string = normalizePath(alias.value)
+        return findFileWithExtension(aliasValue)
+      }
+    }
     const fullPath: string = resolve(projectRoot, normImportPath)
     return findFileWithExtension(fullPath)
   }
+  return null
+}
+
+/**
+ * Resolves relative import paths using alias configuration.
+ * @description Handles import paths that start with '.' by checking alias mappings for relative path resolution.
+ * @param normImportPath - The normalized import path to resolve
+ * @param aliasConfig - The alias configuration for path mapping
+ * @returns The resolved file path or null if not found
+ */
+function aliasRelativePath(normImportPath: string, aliasConfig: AliasConfig[]): string | null {
   for (const alias of aliasConfig) {
     const aliasKey: string = normalizePath(alias.key)
     if (aliasKey.includes('*')) {
