@@ -3,7 +3,7 @@ import { readFileSync, existsSync } from 'node:fs'
 
 /**
  * Global variables for the parser.
- * @description Global variables for the parser.
+ * @description Shared state variables used across parser functions for tracking exports and preventing duplicates.
  */
 const exports: StructureInfo[] = []
 const seenNames: Set<string> = new Set()
@@ -11,7 +11,7 @@ let match: RegExpExecArray | null = null
 
 /**
  * Analyzes a file and extracts its export structure information.
- * @description Parses a file to identify all exported declarations and returns their structure information.
+ * @description Parses a file to identify all exported declarations.
  * @param filePath - The file path to analyze for export structure
  * @returns Array of structure information objects describing the file's exports
  */
@@ -82,7 +82,7 @@ export function findFileStructure(filePath: string): StructureInfo[] {
 
 /**
  * Adds an export to the collection if it hasn't been seen before.
- * @description Adds a unique export to the exports array and tracks it in the seen names set.
+ * @description Adds a unique export to the exports array and tracks it.
  * @param name - The name of the export
  * @param type - The type of the export
  */
@@ -95,7 +95,7 @@ function addExport(name: string, type: string): void {
 
 /**
  * Filters and processes re-export statements from file content.
- * @description Extracts re-exported names from export statements that import from other modules.
+ * @description Extracts re-exported names from export statements.
  * @param content - The file content to analyze for re-exports
  */
 function filterReExports(content: string): void {
@@ -104,7 +104,7 @@ function filterReExports(content: string): void {
     const names: string[] =
       match[1]?.split(',').map((n: string) => {
         const parts: string[] = n.trim().split(' as ')
-        return parts.length > 1 ? (parts[1]?.trim() ?? '') : (parts[0]?.trim() ?? '')
+        return parts.length > 1 ? parts[1]?.trim() ?? '' : parts[0]?.trim() ?? ''
       }) ?? []
     names.forEach((name: string) => {
       if (name) {
@@ -116,7 +116,7 @@ function filterReExports(content: string): void {
 
 /**
  * Filters and processes named export statements from file content.
- * @description Extracts named exports from export statements that don't import from other modules.
+ * @description Extracts named exports from export statements.
  * @param content - The file content to analyze for named exports
  */
 function filterNamedExports(content: string): void {
@@ -125,7 +125,7 @@ function filterNamedExports(content: string): void {
     const names: string[] =
       match[1]?.split(',').map((n: string) => {
         const parts: string[] = n.trim().split(' as ')
-        return parts.length > 1 ? (parts[1]?.trim() ?? '') : (parts[0]?.trim() ?? '')
+        return parts.length > 1 ? parts[1]?.trim() ?? '' : parts[0]?.trim() ?? ''
       }) ?? []
     names.forEach((name: string) => {
       if (name) {
@@ -137,7 +137,7 @@ function filterNamedExports(content: string): void {
 
 /**
  * Filters and processes CommonJS export statements from file content.
- * @description Extracts CommonJS exports from export statements that don't import from other modules.
+ * @description Extracts CommonJS exports from export statements.
  * @param content - The file content to analyze for CommonJS exports
  */
 function filterCommonJSExports(content: string): void {

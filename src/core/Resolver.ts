@@ -5,19 +5,19 @@ import { allowedExtensions } from '@constants/index'
 
 /**
  * Global regex match variable for pattern matching.
- * @description Stores the current regex match result during pattern execution.
+ * @description Stores the current regex match result during pattern execution across resolver functions.
  */
 let match: RegExpExecArray | null = null
 
 /**
  * Global array to store resolved file references.
- * @description Accumulates resolved file references from all import pattern matching functions.
+ * @description Accumulates resolved file references from all import pattern matching functions for batch processing.
  */
 const resolvedResults: Array<FinderResult> = []
 
 /**
  * Resolves import paths from file patterns and returns resolved file references.
- * @description Processes files with import statements and resolves their paths using alias configuration.
+ * @description Processes files with import statements and resolves their paths.
  * @param projectRoot - The root directory of the project
  * @param projectConfig - The alias configuration for path mapping
  * @param filePattern - Array of files containing import statements to process
@@ -32,6 +32,7 @@ export function findPathResolver(
   for (const result of filePattern) {
     const { filename, data }: { filename: string; data: string } = result
     regexES6Import(data, filename, projectRoot, projectConfig)
+    regexES6DefaultImport(data, filename, projectRoot, projectConfig)
     regexCommonJsDestructuring(data, filename, projectRoot, projectConfig)
     regexCommonJSDefault(data, filename, projectRoot, projectConfig)
   }
@@ -40,7 +41,7 @@ export function findPathResolver(
 
 /**
  * Processes ES6 import statements and resolves their paths.
- * @description Extracts named imports from ES6 import statements and resolves their file paths.
+ * @description Extracts named imports from ES6 import statements.
  * @param data - The file content to analyze
  * @param filename - The name of the file being processed
  * @param projectRoot - The root directory of the project
@@ -80,8 +81,45 @@ function regexES6Import(
 }
 
 /**
+ * Processes ES6 default import statements and resolves their paths.
+ * @description Extracts default imports from ES6 import statements.
+ * @param data - The file content to analyze
+ * @param filename - The name of the file being processed
+ * @param projectRoot - The root directory of the project
+ * @param projectConfig - The alias configuration for path mapping
+ */
+function regexES6DefaultImport(
+  data: string,
+  filename: string,
+  projectRoot: string,
+  projectConfig: AliasConfig[]
+): void {
+  const regexPattern: RegExp = /import\s+(\w+)\s+from\s*['"]([^'"]+)['"]/g
+  while ((match = regexPattern.exec(data)) !== null) {
+    const importName: string = match[1] ?? ''
+    const path: string = match[2] ?? ''
+    if (importName && path) {
+      const resolvedPath: string | null = resolveImportPath(
+        path,
+        filename,
+        projectRoot,
+        projectConfig
+      )
+      if (resolvedPath !== null) {
+        resolvedResults.push({
+          reference: resolvedPath,
+          imported: [importName],
+          filename,
+          data
+        })
+      }
+    }
+  }
+}
+
+/**
  * Processes CommonJS destructuring require statements and resolves their paths.
- * @description Extracts destructured imports from CommonJS require statements and resolves their file paths.
+ * @description Extracts destructured imports from CommonJS require statements.
  * @param data - The file content to analyze
  * @param filename - The name of the file being processed
  * @param projectRoot - The root directory of the project
@@ -123,7 +161,7 @@ function regexCommonJsDestructuring(
 
 /**
  * Processes CommonJS default require statements and resolves their paths.
- * @description Extracts default imports from CommonJS require statements and resolves their file paths.
+ * @description Extracts default imports from CommonJS require statements.
  * @param data - The file content to analyze
  * @param filename - The name of the file being processed
  * @param projectRoot - The root directory of the project
@@ -161,7 +199,7 @@ function regexCommonJSDefault(
 
 /**
  * Resolves an import path to its actual file location.
- * @description Resolves import paths using alias configurations, relative paths, and absolute paths.
+ * @description Resolves import paths using alias configurations and relative paths.
  * @param importPath - The import path to resolve
  * @param fromFile - The file containing the import statement
  * @param projectRoot - The root directory of the project
@@ -202,7 +240,7 @@ function resolveImportPath(
 
 /**
  * Resolves non-relative import paths using alias configuration.
- * @description Handles import paths that don't start with '.' by checking alias mappings and project root resolution.
+ * @description Handles import paths that don't start with '.' by checking alias mappings.
  * @param normImportPath - The normalized import path to resolve
  * @param projectRoot - The root directory of the project
  * @param aliasConfig - The alias configuration for path mapping
@@ -222,22 +260,25 @@ function aliasNonRelativePath(
           const relativePath: string = normImportPath.replace(aliasPrefix, '')
           const aliasValue: string = normalizePath(alias.value)
           const fullPath: string = resolve(aliasValue, relativePath)
-          return findFileWithExtension(fullPath)
+          const result: string | null = findFileWithExtension(fullPath)
+          return result
         }
       } else if (normImportPath === aliasKey) {
         const aliasValue: string = normalizePath(alias.value)
-        return findFileWithExtension(aliasValue)
+        const result: string | null = findFileWithExtension(aliasValue)
+        return result
       }
     }
     const fullPath: string = resolve(projectRoot, normImportPath)
-    return findFileWithExtension(fullPath)
+    const result: string | null = findFileWithExtension(fullPath)
+    return result
   }
   return null
 }
 
 /**
  * Resolves relative import paths using alias configuration.
- * @description Handles import paths that start with '.' by checking alias mappings for relative path resolution.
+ * @description Handles import paths that start with '.' by checking alias mappings.
  * @param normImportPath - The normalized import path to resolve
  * @param aliasConfig - The alias configuration for path mapping
  * @returns The resolved file path or null if not found
@@ -263,7 +304,7 @@ function aliasRelativePath(normImportPath: string, aliasConfig: AliasConfig[]): 
 
 /**
  * Normalizes a path for cross-platform compatibility.
- * @description Converts path separators to the current platform's separator and normalizes the path.
+ * @description Converts path separators to the current platform's separator.
  * @param path - The path to normalize
  * @returns The normalized path with platform-specific separators
  */
@@ -273,18 +314,27 @@ function normalizePath(path: string): string {
 
 /**
  * Finds a file with the appropriate extension at the given base path.
- * @description Searches for a file at the base path, checking if it exists or trying allowed extensions.
+ * @description Searches for a file at the base path with allowed extensions.
  * @param basePath - The base path to search for the file
  * @returns The full file path if found, null if no file exists
  */
 function findFileWithExtension(basePath: string): string | null {
   if (extname(basePath)) {
-    return existsSync(basePath) ? basePath : null
+    const exists: boolean = existsSync(basePath)
+    return exists ? basePath : null
   }
   for (const ext of allowedExtensions) {
     const pathWithExt: string = `${basePath}${ext}`
-    if (existsSync(pathWithExt)) {
+    const exists: boolean = existsSync(pathWithExt)
+    if (exists) {
       return pathWithExt
+    }
+  }
+  for (const ext of allowedExtensions) {
+    const indexPath: string = `${basePath}/index${ext}`
+    const exists: boolean = existsSync(indexPath)
+    if (exists) {
+      return indexPath
     }
   }
   return null

@@ -4,7 +4,7 @@ import { ignorePatterns, allowedExtensions } from '@constants/index'
 import { resolveRipgrepPath } from '@utils/index'
 
 /**
- * Finds files that actually use the given file's exports.
+ * Finds files that use the given file's exports.
  * @description Searches for files that import or reference the given file's exports and functions.
  * @param projectRoot - The project root directory
  * @param fileStructure - The structure of the file (exports)
@@ -31,7 +31,8 @@ export async function findPatternReferences(
         } else if (['class', 'function', 'variable'].includes(item.type)) {
           searchPatterns.push(`import\\s+\\{[^}]*${item.name}\\s+as\\s+\\w+[^}]*\\}\\s+from`)
         } else if (item.type === 'default') {
-          searchPatterns.push(`import\\s+${item.name}\\s+from`)
+          searchPatterns.push('import\\s+\\w+\\s+from')
+          searchPatterns.push('import\\s+\\w+\\s*,\\s*\\{')
         } else if (item.type === 'property') {
           searchPatterns.push(`require\\(['"]\\.\\/[^'"]*${item.name}[^'"]*['"]\\)`)
         }

@@ -1,4 +1,10 @@
 /**
+ * Type definition for connection type.
+ * @description Possible values for connection type.
+ */
+export type ConnectionType = 'direct' | 're-export'
+
+/**
  * Type definition for HTTP location header values.
  * @description Possible values for HTTP Location header.
  */
@@ -13,6 +19,36 @@ export interface AliasConfig {
   key: string
   /** The value of the alias */
   value: string
+}
+
+/**
+ * Interface for dependency tree connection.
+ * @description Represents a connection between files in the dependency tree.
+ */
+export interface DependencyConnection {
+  /** Unique identifier for the connection */
+  id: number
+  /** The file path that the consumer imports from */
+  from: string
+  /** The file path of the consumer */
+  to: string
+  /** The type of import relationship */
+  type: ConnectionType
+  /** The exports being used from the original file */
+  exports: string[]
+}
+
+/**
+ * Interface for dependency tree result.
+ * @description Complete dependency tree structure for a file.
+ */
+export interface DependencyTree {
+  /** The file path being analyzed */
+  filePath: string
+  /** Array of connections showing file relationships */
+  connections: DependencyConnection[]
+  /** Array of exports from the analyzed file */
+  exports: StructureInfo[]
 }
 
 /**
