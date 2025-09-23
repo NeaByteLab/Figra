@@ -8,6 +8,7 @@
     "rootDir": "src",
     "baseUrl": ".",
     "paths": {
+      "@root/*": ["src/*"],
       "@constants/*": ["src/constants/*"],
       "@core/*": ["src/core/*"],
       "@interfaces/*": ["src/interfaces/*"],

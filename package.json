@@ -1,14 +1,20 @@
 {
   "name": "@neabyte/figra",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Parses import/export statements, generates dependency trees, and tracks filename references with alias resolution to map file relationships.",
   "type": "module",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "bin": {
+    "figra": "dist/CLI.js"
+  },
   "exports": {
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./cli": {
+      "import": "./dist/CLI.js",
+      "require": "./dist/CLI.js"
     }
   },
   "scripts": {
@@ -18,7 +24,7 @@
     "lint": "eslint src/**/**/**/**/*.ts",
     "lint:fix": "eslint src/**/**/**/**/*.ts --fix",
     "format": "prettier --write src/**/**/**/**/*.ts",
-    "clean": "rm -rf dist",
+    "clean": "rm -rf dist && rm -rf .tsbuildinfo",
     "prepublishOnly": "npm run clean && npm run build",
     "type-check": "tsc --noEmit",
     "check-all": "npm run lint && npm run type-check && npm run test"

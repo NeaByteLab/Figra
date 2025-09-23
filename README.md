@@ -16,7 +16,7 @@ A powerful file analysis tool that parses import/export statements, generates de
   📊 <b><a href="./BENCHMARK.md">[View Performance Benchmarks]</a></b> - Detailed performance analysis across 78 TypeScript files
 </p>
 
-> 📝 **Note:** Output SVG files are saved to `./figra-output/` directory and file paths are resolved relative to the project root. **Planned Feature:** Configuration options will be added to customize path resolution and return SVG content as buffer instead of saving to file.
+> **⚠️ Development Notice**: This project is currently in active development. We're working on improving regex patterns for file structure parsing, which may occasionally result in "No correlation found" or "No exports found" errors. The CLI is fully functional, but analysis accuracy may vary. We welcome bug reports and feedback to help improve the tool.
 
 ## ✨ Features
 
@@ -38,13 +38,104 @@ npm install -g @neabyte/figra
 
 ## 🚀 Usage
 
+### CLI Usage
+
 ```bash
 # Download and setup ripgrep binary (required first time)
-figra download
+figra --download
+# or using short alias
+figra -d
 
-# Analyze a file
-figra /path/to/your/file.ts
+# Analyze a file with full dependency tree and SVG export
+figra --files="/path/to/your/file.ts"
+# or using short alias
+figra -f "/path/to/your/file.ts"
+
+# Get only related files list (skip correlation analysis)
+figra --files="/path/to/your/file.ts" --only-files
+
+# Generate JSON output only (skip SVG generation)
+figra --files="/path/to/your/file.ts" --no-export
+
+# Use custom export directory
+figra --files="/path/to/your/file.ts" --export-path="./my-output"
+# or using short alias
+figra -f "/path/to/your/file.ts" -e "./my-output"
+
+# Show help
+figra --help
+# or using short alias
+figra -h
 ```
+
+### Backend API Usage
+
+```javascript
+import figra from '@neabyte/figra'
+
+// Basic file analysis
+const result = await figra({
+  values: {
+    'files': 'src/index.ts'
+  }
+})
+
+// With options
+const result = await figra({
+  values: {
+    'files': 'src/core/Parser.ts',
+    'only-files': true,
+    'no-export': false,
+    'export-path': './custom-output'
+  }
+})
+
+console.log(result)
+// Output:
+// {
+//   relatedFiles: ['/path/to/file1.ts', '/path/to/file2.ts'],
+//   correlations: { filePath: '...', connections: [...], exports: [...] },
+//   svgPath: '/path/to/output.svg',
+//   svgBuffer: Buffer
+// }
+```
+
+#### API Parameters
+
+| Parameter | Type | Description | Default |
+|-----------|------|-------------|---------|
+| `values.files` | `string` | File path to analyze (required) | - |
+| `values.only-files` | `boolean` | Return only related files list | `false` |
+| `values.no-export` | `boolean` | Skip SVG generation | `false` |
+| `values.export-path` | `string` | Custom export directory | `./output` |
+
+#### TypeScript Support
+
+```typescript
+import figra, { 
+  AnalyzeFileResult, 
+  ParsedArgs, 
+  DependencyTree, 
+  DependencyConnection 
+} from '@neabyte/figra'
+
+const result: AnalyzeFileResult = await figra({
+  values: {
+    'files': 'src/index.ts'
+  }
+})
+```
+
+### 📋 Available Options
+
+| Option | Short | Description | Default |
+|--------|-------|-------------|---------|
+| `--help` | `-h` | Show help message | - |
+| `--download` | `-d` | Download and setup ripgrep binary | `false` |
+| `--files` | `-f` | File path to analyze (required) | - |
+| `--export-path` | `-e` | Custom export directory for SVG output | `./output` |
+| `--no-export` | - | Skip SVG generation, return JSON only | `false` |
+| `--only-files` | - | Return only related files list (skip correlation analysis) | `false` |
 
 ## 📁 Supported Files
 
@@ -145,6 +236,11 @@ graph TD
 
 ## 🚧 TODO Checklist
 
+### Known Bugs
+- **Regex Parsing Issues**: Occasional "No correlation found" or "No exports found" errors due to ongoing improvements in regex patterns for file structure parsing
+- **Boolean Parameter Validation**: Backend API accepts any truthy value for boolean options (e.g., `'only-files': 'false'` is treated as `true`). Use actual boolean values for expected behavior
+- **SVG Export Path**: Custom export paths may not create directories automatically - ensure target directories exist before analysis
+
 #### Core Analysis Engine
 - [x] **File Structure Parsing** - Extracts export declarations (functions, classes, interfaces, types, enums)
 - [x] **Export Type Detection** - Supports ES6, CommonJS, default, named, and re-exports
@@ -164,15 +260,18 @@ graph TD
 - [x] **Error Handling** - Detailed error messages and validation
 
 #### CLI Interface
-- [x] **Command Line Interface** - `figra <file-path>` and `figra download` commands
+- [x] **Command Line Interface** - Full CLI with `--files`, `--download`, `--help` commands
+- [x] **Short Aliases** - `-f`, `-d`, `-h`, `-e` for common options
+- [x] **Export Options** - `--no-export` and `--only-files` flags
+- [x] **Custom Output** - `--export-path` for custom SVG export directory
 - [x] **Search Filtering** - Ignores common directories (node_modules, dist, .git, etc.)
-- [x] **JSON Output** - Structured file analysis results
+- [x] **JSON Output** - Structured file analysis results with SVG buffer
 - [x] **Duplicate Filtering** - Removes duplicate search results
 
 ### Enhance Core Features
-- [ ] Add configurable search patterns for better filtering
-- [ ] Add real-time file watching with live updates
-- [ ] Create API exports for programmatic usage
+- [x] Add configurable search patterns for better filtering
+- [x] Add real-time file watching with live updates
+- [x] Create API exports for programmatic usage
 - [x] Generate visual dependency tree diagrams
 - [ ] Improve CLI progress indicators and user feedback
 

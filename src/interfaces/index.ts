@@ -11,6 +11,17 @@ export type ConnectionType = 'direct' | 're-export'
 export type LocationHeader = string | string[] | undefined
 
 /**
+ * Type definition for parsed command line arguments.
+ * @description Parsed command line arguments.
+ */
+export type ParsedArgs = {
+  /** The values of the parsed arguments */
+  values: Record<string, string | boolean | (string | boolean)[] | undefined>
+  /** The positionals of the parsed arguments */
+  positionals: string[]
+}
+
+/**
  * Interface for alias configuration.
  * @description Configuration for alias mapping.
  */
@@ -19,6 +30,21 @@ export interface AliasConfig {
   key: string
   /** The value of the alias */
   value: string
+}
+
+/**
+ * Interface for analyze file result.
+ * @description Result of the analyze file.
+ */
+export interface AnalyzeFileResult {
+  /** The related files */
+  relatedFiles: string[]
+  /** The correlations */
+  correlations?: DependencyTree | undefined
+  /** The path of the SVG file */
+  svgPath?: string | undefined
+  /** The buffer of the SVG file */
+  svgBuffer?: Buffer | undefined
 }
 
 /**

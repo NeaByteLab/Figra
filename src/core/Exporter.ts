@@ -32,7 +32,6 @@ export function exportToSVG(
       // Skip error if directory already exists
     }
     writeFileSync(outputPath, svgContent, 'utf8')
-    console.log(`[✓] SVG exported to: ${outputPath}`)
   }
   return svgContent
 }
