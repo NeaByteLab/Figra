@@ -47,10 +47,86 @@ figra /path/to/your/file.ts
 
 ---
 
+## 🔧 How Figra Works?
+
+```mermaid
+graph TD
+    A[📁 Target File] --> B[🔧 Stage 1: Parser]
+    B --> C[🔍 Extract Exports]
+    C --> D[🔧 Stage 2: Finder]
+    D --> E[⚡ Ripgrep Search]
+    E --> F[🎯 Find Consumers]
+    F --> G[🔧 Stage 3: Resolver]
+    G --> H[🛣️ Resolve Paths]
+    H --> I[🔧 Stage 4: Correlation]
+    I --> J[🔗 Map Relationships]
+    J --> K[📊 Dependency Tree]
+    
+    B --> B1[Functions]
+    B --> B2[Classes]
+    B --> B3[Interfaces]
+    B --> B4[Types]
+    B --> B5[Enums]
+    
+    D --> D1[Named Imports]
+    D --> D2[Default Imports]
+    D --> D3[Type Imports]
+    D --> D4[CommonJS]
+    
+    G --> G1[Relative Paths]
+    G --> G2[Alias Resolution]
+    G --> G3[Absolute Paths]
+    
+    I --> I1[Direct Connections]
+    I --> I2[Re-export Chains]
+    
+    classDef important fill:#e1f5fe,stroke:#01579b,stroke-width:3px,color:#000
+    classDef stage fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000
+    classDef result fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000
+    
+    class B,D,G,I stage
+    class C,E,F,H,J important
+    class K result
+```
+
+### 🔍 **Stage 1: File Structure Parsing**
+- **Parser Module** (`Parser.ts`) extracts all export declarations from the target file
+- Detects **functions**, **classes**, **interfaces**, **enums**, **types**, **variables**, and **default exports**
+- Supports **ES6**, **CommonJS**, **named exports**, **re-exports**, and **default exports**
+- Uses regex patterns to identify different export patterns accurately
+
+### 🔎 **Stage 2: Pattern-Based Search**
+- **Finder Module** (`Finder.ts`) uses **ripgrep** to search across your entire project
+- Generates comprehensive search patterns for different import styles:
+  - `import { name } from 'path'` (named imports)
+  - `import name from 'path'` (default imports)
+  - `import type { name } from 'path'` (type imports)
+  - `const { name } = require('path')` (CommonJS destructuring)
+  - `const name = require('path')` (CommonJS default)
+- Filters results by file extensions and ignores common directories (node_modules, dist, etc.)
+
+### 🛣️ **Stage 3: Path Resolution**
+- **Resolver Module** (`Resolver.ts`) resolves import paths to actual file locations
+- Handles multiple path types:
+  - **Relative paths** (`./`, `../`) with proper directory traversal
+  - **Alias resolution** from `tsconfig.json` path mapping
+  - **Absolute paths** and **cross-platform compatibility**
+- Supports complex nested structures and wildcard aliases (`@utils/*`)
+
+### 🔗 **Stage 4: Dependency Correlation**
+- **Correlation Module** (`Correlation.ts`) maps relationships between files
+- Identifies two types of connections:
+  - **Direct**: Files that directly import from the analyzed file
+  - **Re-export**: Files that re-export exports from the analyzed file
+- Detects **re-export chains** and **alias-based re-exports**
+- Returns structured **dependency trees** with connection details
+
+---
+
 ## 🚧 TODO Checklist
 
 #### Core Analysis Engine
-- [x] **File Structure Parsing** - Extracts all export declarations (functions, variables, classes, interfaces, types, enums)
+- [x] **File Structure Parsing** - Extracts export declarations (functions, classes, interfaces, types, enums)
 - [x] **Export Type Detection** - Supports ES6, CommonJS, default, named, and re-exports
 - [x] **File Reference Tracking** - Uses ripgrep to find cross-file references
 - [x] **Pattern-based Search** - Multiple search patterns for different import styles
