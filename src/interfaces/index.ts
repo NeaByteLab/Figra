@@ -20,6 +20,10 @@ export interface AliasConfig {
  * @description Result of the finder.
  */
 export interface FinderResult {
+  /** The type of the result */
+  reference?: string
+  /** The type of the result */
+  imported?: string[]
   /** The filename of the result */
   filename: string
   /** The data of the result */

@@ -20,51 +20,53 @@ export function findFileStructure(filePath: string): StructureInfo[] {
     return []
   }
   const content: string = readFileSync(filePath, 'utf8')
-  const functionRegex: RegExp = /export\s+(?:async\s+)?function\s+(\w+)/g
+  const functionRegex: RegExp = /export\s*(?:async\s+)?function\s+(\w+)/g
   while ((match = functionRegex.exec(content)) !== null) {
     addExport(match[1] ?? '', 'function')
   }
-  const variableRegex: RegExp = /export\s+(const|let|var)\s+(\w+)/g
+  const variableRegex: RegExp = /export\s*(const|let|var)\s+(\w+)/g
   while ((match = variableRegex.exec(content)) !== null) {
     addExport(match[2] ?? '', 'variable')
   }
-  const classRegex: RegExp = /export\s+(?:default\s+)?class\s+(\w+)/g
+  const classRegex: RegExp = /export\s*(?:default\s+)?class\s+(\w+)/g
   while ((match = classRegex.exec(content)) !== null) {
     addExport(match[1] ?? '', 'class')
   }
-  const interfaceRegex: RegExp = /export\s+(?:default\s+)?interface\s+(\w+)/g
+  const interfaceRegex: RegExp = /export\s*(?:default\s+)?interface\s+(\w+)/g
   while ((match = interfaceRegex.exec(content)) !== null) {
     addExport(match[1] ?? '', 'interface')
   }
-  const typeRegex: RegExp = /export\s+(?:default\s+)?type\s+(\w+)/g
+  const typeRegex: RegExp = /export\s*(?:default\s+)?type\s+(\w+)/g
   while ((match = typeRegex.exec(content)) !== null) {
     addExport(match[1] ?? '', 'type')
   }
-  const enumRegex: RegExp = /export\s+(?:default\s+)?enum\s+(\w+)/g
+  const enumRegex: RegExp = /export\s*(?:default\s+)?enum\s+(\w+)/g
   while ((match = enumRegex.exec(content)) !== null) {
     addExport(match[1] ?? '', 'enum')
   }
-  const defaultFunctionRegex: RegExp = /export\s+default\s+(?:async\s+)?function\s+(\w+)/g
+  const defaultFunctionRegex: RegExp =
+    /export\s*default\s+(?:async\s+)?function\s*(?:(\w+)|\(\s*\))/g
   while ((match = defaultFunctionRegex.exec(content)) !== null) {
-    addExport(match[1] ?? '', 'default')
+    const exportName: string = match[1] ?? 'default'
+    addExport(exportName, 'default')
   }
-  const defaultClassRegex: RegExp = /export\s+default\s+class\s+(\w+)/g
+  const defaultClassRegex: RegExp = /export\s*default\s+class\s+(\w+)/g
   while ((match = defaultClassRegex.exec(content)) !== null) {
     addExport(match[1] ?? '', 'default')
   }
-  const defaultConstRegex: RegExp = /export\s+default\s+(?:const|let|var)\s+(\w+)/g
+  const defaultConstRegex: RegExp = /export\s*default\s+(?:const|let|var)\s+(\w+)/g
   while ((match = defaultConstRegex.exec(content)) !== null) {
     addExport(match[1] ?? '', 'default')
   }
-  const defaultArrowRegex: RegExp = /export\s+default\s+(\w+)\s*=/g
+  const defaultArrowRegex: RegExp = /export\s*default\s+(\w+)\s*=/g
   while ((match = defaultArrowRegex.exec(content)) !== null) {
     addExport(match[1] ?? '', 'default')
   }
-  const functionExpressionRegex: RegExp = /export\s+const\s+(\w+)\s*=\s*function/g
+  const functionExpressionRegex: RegExp = /export\s*const\s+(\w+)\s*=\s*function/g
   while ((match = functionExpressionRegex.exec(content)) !== null) {
     addExport(match[1] ?? '', 'function')
   }
-  const templateExportRegex: RegExp = /export\s+const\s+(\w+)\s*=\s*`/g
+  const templateExportRegex: RegExp = /export\s*const\s+(\w+)\s*=\s*`/g
   while ((match = templateExportRegex.exec(content)) !== null) {
     addExport(match[1] ?? '', 'variable')
   }

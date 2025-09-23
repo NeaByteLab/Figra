@@ -31,12 +31,14 @@ async function main(): Promise<void> {
       console.warn('[✓] Ripgrep already downloaded, skipping download...')
       return
     }
-    downloadRipgrep().then(() => {
-      process.exit(0)
-    }).catch((error: Error) => {
-      console.error(`[✗] Download failed: ${error.message}`)
-      process.exit(1)
-    })
+    downloadRipgrep()
+      .then(() => {
+        process.exit(0)
+      })
+      .catch((error: Error) => {
+        console.error(`[✗] Download failed: ${error.message}`)
+        process.exit(1)
+      })
     return
   }
   const filePath: string = args[0] ?? ''

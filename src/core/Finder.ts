@@ -10,7 +10,10 @@ import { resolveRipgrepPath } from '@utils/index'
  * @param fileStructure - The structure of the file (exports)
  * @returns Array of objects containing filename and data content
  */
-export async function findPatternReferences(projectRoot: string, fileStructure: StructureInfo[]): Promise<Array<FinderResult>> {
+export async function findPatternReferences(
+  projectRoot: string,
+  fileStructure: StructureInfo[]
+): Promise<Array<FinderResult>> {
   const ripgrepPath: string | null = resolveRipgrepPath()
   if (ripgrepPath === null) {
     throw new Error('Ripgrep binary not found')
@@ -49,8 +52,10 @@ export async function findPatternReferences(projectRoot: string, fileStructure: 
         `*.{${fileExtensions}}`,
         '--ignore-case',
         '--no-heading',
-        '--max-filesize', '10M',
-        '--max-count', '200',
+        '--max-filesize',
+        '10M',
+        '--max-count',
+        '200',
         ...ignoreArgs,
         pattern,
         projectRoot
@@ -90,7 +95,9 @@ export async function findPatternReferences(projectRoot: string, fileStructure: 
           const content: string[] = parts.slice(1)
           if (file !== undefined) {
             const contentStr: string = content.join(':').trim()
-            const existingResult: FinderResult | undefined = allResults.find((r: FinderResult) => r.filename === file)
+            const existingResult: FinderResult | undefined = allResults.find(
+              (r: FinderResult) => r.filename === file
+            )
             if (existingResult) {
               if (!existingResult.data.includes(contentStr)) {
                 existingResult.data += `\n${contentStr}`

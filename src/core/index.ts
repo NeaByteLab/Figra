@@ -3,6 +3,8 @@ import { findProjectRoot } from '@neabyte/project-root'
 import { findAliasConfig } from '@core/alias'
 import { findPatternReferences } from '@core/Finder'
 import { findFileStructure } from '@core/Parser'
+import { findPathResolver } from '@core/Resolver'
+import { readFileSync } from 'fs'
 
 /**
  * Analyzes a file and logs the analysis results.
@@ -17,11 +19,22 @@ export async function analyzeFile(filePath: string): Promise<void> {
     console.error('[✗] Project root not found')
     return
   }
-  console.log(`[✓] Project root: ${projectRoot}`)
-  const aliasConfig: AliasConfig[] = findAliasConfig(projectRoot)
-  console.log(`[✓] Alias configuration:\n${JSON.stringify(aliasConfig, null, 2)}`)
   const fileStructure: StructureInfo[] = findFileStructure(filePath)
-  console.log(`[✓] File structure:\n${JSON.stringify(fileStructure, null, 2)}`)
+  if (fileStructure.length === 0) {
+    console.error('[✗] No exports found in file, ensure file contains export statements')
+    return
+  }
+  const projectConfig: AliasConfig[] = findAliasConfig(projectRoot)
   const filePattern: Array<FinderResult> = await findPatternReferences(projectRoot, fileStructure)
-  console.log(`[✓] File pattern references:\n${JSON.stringify(filePattern, null, 2)}`)
+  const pathResolver: Array<FinderResult> = findPathResolver(projectRoot, projectConfig, [
+    ...filePattern,
+    ...[
+      {
+        filename: filePath,
+        data: readFileSync(filePath, 'utf8')
+      }
+    ]
+  ])
+  console.log(`[✓] Resolved paths:\n${JSON.stringify(pathResolver, null, 2)}`)
+  process.exit(0)
 }
