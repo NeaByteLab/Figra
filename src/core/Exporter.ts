@@ -177,9 +177,10 @@ function generateSVGContent(
     const nodeStroke: string = isDirect ? '#16a34a' : '#2563eb'
     const exportNumbers: string = connection.exports
       .map((exp: string) => {
-        const exportIndex: number = exports.findIndex((e: StructureInfo) => e.name === exp) + 1
-        return exportIndex.toString()
+        const exportIndex: number = exports.findIndex((e: StructureInfo) => e.name === exp)
+        return exportIndex !== -1 ? (exportIndex + 1).toString() : '1'
       })
+      .sort((a: string, b: string) => parseInt(a) - parseInt(b))
       .join(',')
     const nodeType: string = `[${exportNumbers}]`
     const displayPath: string = consumerPath
