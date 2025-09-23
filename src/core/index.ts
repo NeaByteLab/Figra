@@ -50,5 +50,4 @@ export async function analyzeFile(filePath: string): Promise<void> {
   const timestamp: string = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
   const svgPath: string = `./figra-output/${fileName}-dependencies-${timestamp}.svg`
   exportToSVG(correlationResult, projectRoot, svgPath)
-  process.exit(0)
 }

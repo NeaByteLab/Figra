@@ -24,7 +24,7 @@ async function main(): Promise<void> {
     console.error('[?] Usage: figra <file-path> | figra download')
     console.error('[?] Example: figra /path/to/your/file.ts')
     console.error('[?] Download: figra download')
-    process.exit(1)
+    return
   }
   if (args[0] === 'download') {
     if (isRipgrepDownloaded()) {
@@ -33,11 +33,10 @@ async function main(): Promise<void> {
     }
     downloadRipgrep()
       .then(() => {
-        process.exit(0)
+        return
       })
       .catch((error: Error) => {
         console.error(`[✗] Download failed: ${error.message}`)
-        process.exit(1)
       })
     return
   }
@@ -54,7 +53,7 @@ async function main(): Promise<void> {
     } else {
       console.error('[✗] Error: An unknown error occurred')
     }
-    process.exit(1)
+    return
   }
 }
 
@@ -71,6 +70,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     } else {
       console.error('[✗] Error: An unknown error occurred')
     }
-    process.exit(1)
   })
 }

@@ -12,6 +12,10 @@ A powerful file analysis tool that parses import/export statements, generates de
   <img src="./preview/example1.svg" alt="Figra Dependency Tree Example" width="100%"/>
 </div>
 
+<p align="center">
+  📊 <b><a href="./BENCHMARK.md">[View Performance Benchmarks]</a></b> - Detailed performance analysis across 78 TypeScript files
+</p>
+
 > 📝 **Note:** Output SVG files are saved to `./figra-output/` directory and file paths are resolved relative to the project root. **Planned Feature:** Configuration options will be added to customize path resolution and return SVG content as buffer instead of saving to file.
 
 ## ✨ Features
@@ -101,7 +105,7 @@ graph TD
 
 ### 🔎 **Stage 2: Pattern-Based Search**
 - **Finder Module** (`Finder.ts`) uses **ripgrep** to search across your entire project
-- Generates comprehensive search patterns for different import styles:
+- Generates detailed search patterns for different import styles:
   - `import { name } from 'path'` (named imports)
   - `import name from 'path'` (default imports)
   - `import type { name } from 'path'` (type imports)
@@ -157,7 +161,7 @@ graph TD
 #### File Support & Validation
 - [x] **Multi-format Support** - `.js`, `.mjs`, `.cjs`, `.jsx`, `.ts`, `.tsx`
 - [x] **File Validation** - Checks existence and extension validity
-- [x] **Error Handling** - Comprehensive error messages and validation
+- [x] **Error Handling** - Detailed error messages and validation
 
 #### CLI Interface
 - [x] **Command Line Interface** - `figra <file-path>` and `figra download` commands
