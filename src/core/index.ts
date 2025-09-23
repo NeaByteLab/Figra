@@ -34,7 +34,7 @@ export async function analyzeFile(filePath: string): Promise<void> {
     filePattern
   )
   if (pathResolver.length === 0) {
-    throw new Error('No resolved paths found, please check the file structure')
+    throw new Error('No resolved paths found, expected no imports in file')
   }
   console.log(`[✓] Path resolver:\n${JSON.stringify(pathResolver, null, 2)}`)
   const correlationResult: DependencyTree = findCorrelation(filePath, fileStructure, pathResolver)

@@ -16,6 +16,7 @@ let match: RegExpExecArray | null = null
  * @returns Array of structure information objects describing the file's exports
  */
 export function findFileStructure(filePath: string): StructureInfo[] {
+  clearPersistence()
   if (!existsSync(filePath)) {
     return []
   }
@@ -153,4 +154,15 @@ function filterCommonJSExports(content: string): void {
       }
     })
   }
+}
+
+/**
+ * Clears the persistence of the parser.
+ * @description Clears the exports array and seen names set.
+ * @returns void
+ */
+function clearPersistence(): void {
+  exports.length = 0
+  seenNames.clear()
+  match = null
 }
