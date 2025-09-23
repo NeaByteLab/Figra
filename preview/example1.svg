@@ -85,7 +85,7 @@
       src/core/Exporter.ts
     </text>
     <text x="898" y="432" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="bold" fill="#374151">
-      [3,2,6]
+      [2,3,6]
     </text>
     <rect x="1116" y="380" width="220" height="80" fill="url(#directGradient)" stroke="#16a34a" stroke-width="2" rx="10" filter="url(#shadow)"/>
     <text x="1226" y="415" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#374151">
@@ -99,7 +99,7 @@
       src/scripts/index.ts
     </text>
     <text x="570" y="632" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="bold" fill="#374151">
-      [8,5]
+      [5,8]
     </text>
     <rect x="788" y="580" width="220" height="80" fill="url(#directGradient)" stroke="#16a34a" stroke-width="2" rx="10" filter="url(#shadow)"/>
     <text x="898" y="615" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#374151">
