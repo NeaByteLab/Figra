@@ -1,5 +1,6 @@
-import type { StructureInfo } from '@interfaces/index'
+import type { AliasConfig, FinderResult, StructureInfo } from '@interfaces/index'
 import { findProjectRoot } from '@neabyte/project-root'
+import { findAliasConfig } from '@core/alias'
 import { findPatternReferences } from '@core/Finder'
 import { findFileStructure } from '@core/Parser'
 
@@ -17,11 +18,10 @@ export async function analyzeFile(filePath: string): Promise<void> {
     return
   }
   console.log(`[✓] Project root: ${projectRoot}`)
-  const filename: string = filePath.split('/').pop()?.split('.')[0] ?? ''
-  if (filename) {
-    console.log(`[✓] Searching for files using "${filename}":`)
-    const resFileStructure: StructureInfo[] = findFileStructure(filePath)
-    console.log(`[✓] File structure:\n${JSON.stringify(resFileStructure, null, 2)}`)
-    await findPatternReferences(projectRoot, filename)
-  }
+  const aliasConfig: AliasConfig[] = findAliasConfig(projectRoot)
+  console.log(`[✓] Alias configuration:\n${JSON.stringify(aliasConfig, null, 2)}`)
+  const fileStructure: StructureInfo[] = findFileStructure(filePath)
+  console.log(`[✓] File structure:\n${JSON.stringify(fileStructure, null, 2)}`)
+  const filePattern: Array<FinderResult> = await findPatternReferences(projectRoot, fileStructure)
+  console.log(`[✓] File pattern references:\n${JSON.stringify(filePattern, null, 2)}`)
 }

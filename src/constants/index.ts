@@ -29,16 +29,17 @@ export const allowedExtensions: string[] = ['.js', '.mjs', '.cjs', '.jsx', '.ts'
  * @description Patterns to exclude from file analysis to improve performance and avoid noise.
  */
 export const ignorePatterns: string[] = [
+  '.docusaurus/**',
   '.git/**',
   '.idea/**',
+  '.next/**',
+  '.nuxt/**',
   '.vscode/**',
-  '*.bundle.js',
-  '*.log',
-  '*.min.js',
-  '*.temp',
-  '*.tmp',
+  '.vuepress/**',
   'build/**',
   'coverage/**',
   'dist/**',
-  'node_modules/**'
+  'public/**',
+  'node_modules/**',
+  'out/**'
 ]

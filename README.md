@@ -93,7 +93,7 @@ figra /path/to/your/file.ts
 - [ ] Parse `parcel.config.js` for Parcel aliases
 - [ ] Parse `rollup.config.js` for Rollup aliases
 - [ ] Parse `svelte.config.js` for SvelteKit aliases
-- [ ] Parse `tsconfig.json` for TypeScript path aliases
+- [x] Parse `tsconfig.json` for TypeScript path aliases
 - [ ] Parse `vite.config.js/ts` for Vite bundler aliases
 - [ ] Parse `vitest.config.js/ts` for Vitest testing aliases
 - [ ] Parse `webpack.config.js` for Webpack aliases
