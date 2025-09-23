@@ -8,7 +8,11 @@
 
 A powerful file analysis tool that parses import/export statements, generates dependency trees, and tracks filename references with alias resolution. Features automatic ripgrep binary download and multi-platform support.
 
-> 🚧 **Note:** This tool is currently in development. Some features may not be fully implemented yet.
+<div align="center">
+  <img src="./preview/example1.svg" alt="Figra Dependency Tree Example" width="100%"/>
+</div>
+
+> 📝 **Note:** Output SVG files are saved to `./figra-output/` directory and file paths are resolved relative to the project root. **Planned Feature:** Configuration options will be added to customize path resolution and return SVG content as buffer instead of saving to file.
 
 ## ✨ Features
 
@@ -25,7 +29,7 @@ A powerful file analysis tool that parses import/export statements, generates de
 ## 📦 Installation
 
 ```bash
-npm install -g @neabytelab/figra
+npm install -g @neabyte/figra
 ```
 
 ## 🚀 Usage
@@ -123,6 +127,18 @@ graph TD
 
 ---
 
+## 🖼️ Other Preview
+
+<div align="center">
+  <img src="./preview/example2.svg" alt="Figra Analysis Example 2" width="100%"/>
+</div>
+
+<div align="center">
+  <img src="./preview/example3.svg" alt="Figra Analysis Example 3" width="100%"/>
+</div>
+
+---
+
 ## 🚧 TODO Checklist
 
 #### Core Analysis Engine
@@ -153,7 +169,7 @@ graph TD
 - [ ] Add configurable search patterns for better filtering
 - [ ] Add real-time file watching with live updates
 - [ ] Create API exports for programmatic usage
-- [ ] Generate visual dependency tree diagrams
+- [x] Generate visual dependency tree diagrams
 - [ ] Improve CLI progress indicators and user feedback
 
 ### Support Alias Resolution from Config Files

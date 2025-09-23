@@ -105,7 +105,7 @@ function filterReExports(content: string): void {
     const names: string[] =
       match[1]?.split(',').map((n: string) => {
         const parts: string[] = n.trim().split(' as ')
-        return parts.length > 1 ? parts[1]?.trim() ?? '' : parts[0]?.trim() ?? ''
+        return parts.length > 1 ? (parts[1]?.trim() ?? '') : (parts[0]?.trim() ?? '')
       }) ?? []
     names.forEach((name: string) => {
       if (name) {
@@ -126,7 +126,7 @@ function filterNamedExports(content: string): void {
     const names: string[] =
       match[1]?.split(',').map((n: string) => {
         const parts: string[] = n.trim().split(' as ')
-        return parts.length > 1 ? parts[1]?.trim() ?? '' : parts[0]?.trim() ?? ''
+        return parts.length > 1 ? (parts[1]?.trim() ?? '') : (parts[0]?.trim() ?? '')
       }) ?? []
     names.forEach((name: string) => {
       if (name) {

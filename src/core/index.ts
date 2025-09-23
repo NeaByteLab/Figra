@@ -5,6 +5,7 @@ import { findCorrelation } from '@core/Correlation'
 import { findPatternReferences } from '@core/Finder'
 import { findFileStructure } from '@core/Parser'
 import { findPathResolver } from '@core/Resolver'
+import { exportToSVG } from '@core/Exporter'
 
 /**
  * Analyzes a file and logs the analysis results.
@@ -36,11 +37,18 @@ export async function analyzeFile(filePath: string): Promise<void> {
   if (pathResolver.length === 0) {
     throw new Error('No resolved paths found, expected no imports in file')
   }
-  console.log(`[✓] Path resolver:\n${JSON.stringify(pathResolver, null, 2)}`)
   const correlationResult: DependencyTree = findCorrelation(filePath, fileStructure, pathResolver)
   if (correlationResult.connections.length === 0) {
     throw new Error('No correlation found, please open issue on GitHub')
   }
-  console.log(`[✓] Correlation result:\n${JSON.stringify(correlationResult, null, 2)}`)
+  console.log(`[✓] Correlation found: ${JSON.stringify(correlationResult, null, 2)}`)
+  const fileName: string =
+    filePath
+      .split('/')
+      .pop()
+      ?.replace(/\.(ts|js|tsx|jsx)$/, '') ?? 'dependency'
+  const timestamp: string = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
+  const svgPath: string = `./figra-output/${fileName}-dependencies-${timestamp}.svg`
+  exportToSVG(correlationResult, projectRoot, svgPath)
   process.exit(0)
 }
